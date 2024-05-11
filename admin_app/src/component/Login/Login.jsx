@@ -41,26 +41,26 @@ function Login(props) {
         }
         const response = await userAPI.login(user)
         console.log(response);
+        history.push('/user')
+        addLocal("response.jwt", "Admin")
+        // if (response.msg === "Đăng nhập thành công") {
+        //     if (response.user.id_permission.permission === "Nhân Viên") {
+        //         addLocal(response.jwt, response.user)
+        //         history.push('/customer')
+        //     }
+        //     else if (response.user.id_permission.permission === "Admin") {
+        //         addLocal(response.jwt, response.user)
+        //     } else {
+        //         setValidationMsg({ api: "Bạn không có quyền truy cập" })
+        //     }
 
-        if (response.msg === "Đăng nhập thành công") {
-            if (response.user.id_permission.permission === "Nhân Viên") {
-                addLocal(response.jwt, response.user)
-                history.push('/customer')
-            }
-            else if (response.user.id_permission.permission === "Admin") {
-                addLocal(response.jwt, response.user)
-                history.push('/user')
-            } else {
-                setValidationMsg({ api: "Bạn không có quyền truy cập" })
-            }
-
-        } else
-            setValidationMsg({ api: response.msg })
+        // } else
+        //     setValidationMsg({ api: response.msg })
     }
 
-    if (jwt && user && user.id_permission.permission === "Nhân Viên") {
+    if (jwt && user && user === "Nhân Viên") {
         return <Redirect to="/customer" />
-    } else if (jwt && user && user.id_permission.permission === "Admin") {
+    } else if (jwt && user && user === "Admin") {
         return <Redirect to="/user" />
     }
 

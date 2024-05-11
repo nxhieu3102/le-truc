@@ -9,6 +9,7 @@ import Search from '../Shared/Search'
 
 function Product() {
 
+    console.log('Product component rendered');
     const [filter, setFilter] = useState({
         page: '1',
         limit: '5',

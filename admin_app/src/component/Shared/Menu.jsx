@@ -6,8 +6,8 @@ import {
 import { AuthContext } from '../context/Auth'
 
 function Menu() {
-    const { user, jwt } = useContext(AuthContext);
-
+    let { user, jwt } = useContext(AuthContext);
+    user = "Nhân Viên"
     const [menu, setMenu] = useState([
         {
             item: "Customer",
@@ -72,6 +72,8 @@ function Menu() {
         // "CancelOrder"
     ])
     let { pathname } = window.location;
+    console.log('user', user);
+    console.log('jwt', jwt)
     return (
         <div>
             {
@@ -96,7 +98,7 @@ function Menu() {
                                                         (
                                                             <li className="sidebar-item active" key={index}>
                                                                 {
-                                                                    item.permission === user.id_permission.permission ?
+                                                                    item.permission === user ?
                                                                         (
                                                                             <NavLink to={"/" + item.item.toLowerCase()} className="sidebar-link">
                                                                                 {item.item}
