@@ -7,14 +7,7 @@ services:
       - "3000:3000"
     depends_on:
       - server
-      
-  admin:
-    build: ./admin_app
-    ports:
-      - "3002:3002"
-    depends_on:
-      - server
-
+  
   server:
     build: ./server_app
     ports:
