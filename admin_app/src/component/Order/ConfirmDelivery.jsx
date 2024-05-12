@@ -109,9 +109,9 @@ function ConfirmDelivery(props) {
                                                             </div>
                                                         </td>
                                                         <td className="name">{value._id}</td>
-                                                        <td className="name">{value.id_note.fullname}</td>
-                                                        <td className="name">{value.id_user.email}</td>
-                                                        <td className="name">{value.id_note.phone}</td>
+                                                        <td className="name">{value.id_note?.fullname}</td>
+                                                        <td className="name">{value.id_user?.email}</td>
+                                                        <td className="name">{value.id_note?.phone}</td>
                                                         <td className="name">{value.address}</td>
                                                         <td>
                                                             {(() => {
