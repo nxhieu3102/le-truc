@@ -21,6 +21,7 @@ function MoMo(props) {
 
     const { orderID, total } = props
 
+    console.log(total)
     console.log(orderID)
 
     useEffect(() => {
@@ -60,9 +61,7 @@ function MoMo(props) {
                         setError(false)
                     }, 1500)
                 } else {
-
                     window.location.href = response.data.payUrl
-
                 }
             })
             .catch(error => {

@@ -108,8 +108,8 @@ function MainHistory(props) {
                                                 history && history.map(value => (
                                                     <tr key={value._id}>
                                                         <td className="li-product-price"><span className="amount"><Link to={`/history/${value._id}`}>View</Link></span></td>
-                                                        <td className="li-product-price"><span className="amount">{value.id_note.fullname}</span></td>
-                                                        <td className="li-product-price"><span className="amount">{value.id_note.phone}</span></td>
+                                                        <td className="li-product-price"><span className="amount">{value.id_note?.fullname}</span></td>
+                                                        <td className="li-product-price"><span className="amount">{value.id_note?.phone}</span></td>
                                                         <td className="li-product-price"><span className="amount">{value.address}</span></td>
 
                                                         <td className="li-product-price"><span className="amount">{new Intl.NumberFormat('vi-VN',{style: 'decimal',decimal: 'VND'}).format(value.total) + ' VNĐ'}</span></td>
