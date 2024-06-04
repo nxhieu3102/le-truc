@@ -43,16 +43,14 @@ function Checkout(props) {
 
     useEffect(() => {
 
-        if (check_action) {
+        {
 
             set_carts(JSON.parse(localStorage.getItem('carts')))
 
             Sum_Price(JSON.parse(localStorage.getItem('carts')), 0)
-
-            set_check_action(false)
         }
 
-    }, [check_action])
+    }, [])
 
     // Hàm này dùng để tính tổng tiền
     function Sum_Price(carts, sum_price) {
