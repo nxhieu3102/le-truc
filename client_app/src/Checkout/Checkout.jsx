@@ -309,9 +309,15 @@ function Checkout(props) {
 
     }
 
-    const handlerMomo = () => {
-        setOrderID(Math.random().toString())
-        console.log("Momo Thanh Cong")
+    const handleMoMoPayment = async () => {
+        const res = await OrderAPI.get_momo_payment(total_price)
+        console.log(res.payUrl);
+        window.open(res.payUrl, '_blank');
+    }
+
+    const handleZaloPayPayment = async () => {
+        const res = await OrderAPI.get_zalopay_payment(total_price)
+        console.log(res);
     }
 
     return (
@@ -523,9 +529,9 @@ function Checkout(props) {
                                                 <div className="card">
                                                     <div className="card-header" id="#payment-3">
                                                         <h5 className="panel-title">
-                                                            <a className="collapsed" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                                            <div className="collapsed" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
                                                                 PayPal
-                                                            </a>
+                                                            </div>
                                                         </h5>
                                                     </div>
                                                     <div id="collapseThree" className="collapse">
@@ -550,9 +556,9 @@ function Checkout(props) {
                                                 <div className="card">
                                                     <div className="card-header" id="#payment-3">
                                                         <h5 className="panel-title">
-                                                            <a className="collapsed" data-toggle="collapse" data-target="#collapseMomo" aria-expanded="false" aria-controls="collapseMomo">
+                                                            <div className="collapsed" data-toggle="collapse" data-target="#collapseMomo" aria-expanded="false" aria-controls="collapseMomo">
                                                                 MoMo
-                                                            </a>
+                                                            </div>
                                                         </h5>
                                                     </div>
                                                     <div id="collapseMomo" className="collapse">
@@ -560,12 +566,30 @@ function Checkout(props) {
                                                             {
                                                                 show_error ? 'Please Checking Information!' :
                                                                     <div>
-                                                                        <img src="https://developers.momo.vn/images/logo.png" width="50" onClick={handlerMomo}
-                                                                            style={{ cursor: 'pointer' }} />
-                                                                        <MoMo
-                                                                            orderID={orderID}
-                                                                            total={total_price}
-                                                                        />
+                                                                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSR8wCIZr-Jfis7jxpWC6u95qfU17vc0CXFeA&s" width="50" onClick={handleMoMoPayment}
+                                                                            style={{ cursor: 'pointer' }} alt='momo icon'/>
+                                                                    </div>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <div className="card">
+                                                    <div className="card-header" id="#payment-3">
+                                                        <h5 className="panel-title">
+                                                            <div className="collapsed" data-toggle="collapse" data-target="#collapseZalopay" aria-expanded="false" aria-controls="collapseZalopay">
+                                                                ZaloPay
+                                                            </div>
+                                                        </h5>
+                                                    </div>
+                                                    <div id="collapseZalopay" className="collapse">
+                                                        <div className="card-body">
+                                                            {
+                                                                show_error ? 'Please Checking Information!' :
+                                                                    <div>
+                                                                        <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/10/Logo-ZaloPay-Square.png" width="50" onClick={handleZaloPayPayment}
+                                                                            style={{ cursor: 'pointer' }} alt='zalo icon'/>
                                                                     </div>
                                                             }
                                                         </div>

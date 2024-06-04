@@ -17,4 +17,5 @@ router.post('/momo', Order.post_momo)
 
 router.post('/email', Order.send_mail)
 
+router.post('/zalopay', Order.post_zalopay)
 module.exports = router

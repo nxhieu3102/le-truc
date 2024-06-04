@@ -25,6 +25,14 @@ const OrderAPI = {
     cancel_order: (query) => {
         const url = `/api/admin/Order/cancelorder${query}`
         return axiosClient.patch(url)
+    },
+
+    get_momo_payment: async (amount) => {
+        return axiosClient.post('/api/Payment/momo', { amount })
+    },
+
+    get_zalopay_payment: async (amount) => {
+        return axiosClient.post('/api/Payment/zalopay', { amount })
     }
 
 }

@@ -1,10 +1,12 @@
 
 const mailer = require('../../mailer')
-const crypto = require('crypto')
-
+const sha256 = require('js-sha256');
 const Order = require('../../Models/order')
 const Detail_Order = require('../../Models/detail_order')
 const Note = require('../../Models/note')
+const https = require('https');
+const axios = require('axios');
+const moment = require('moment'); // npm install moment
 
 // Đặt hàng
 module.exports.post_order = async (req, res) => {
@@ -67,129 +69,106 @@ module.exports.get_detail = async (req, res) => {
 }
 
 module.exports.post_momo = async (req, res) => {
+    const accessKey = 'F8BBA842ECF85';
+    const secretKey = 'K951B6PE1waDMi640xX08PD3vg6EkVlz';
+    const orderInfo = 'pay with MoMo';
+    const partnerCode = 'MOMO';
+    const redirectUrl = 'http://localhost:3000';
+    const ipnUrl = 'https://webhook.site/b3088a6a-2d17-4f8d-a383-71389a6c600b';
+    const requestType = "payWithMethod";
+    const amount = req.body.amount;
+    const orderId = partnerCode + new Date().getTime();
+    const requestId = orderId;
+    const extraData = '';
+    const orderGroupId = '';
+    const autoCapture = true;
+    const lang = 'vi';
 
-    const serectkey = "uLb683H8g9dWuiyipZbLHgO6zjSDlVm5"
-    const accessKey = req.body.accessKey
-    const amount = req.body.amount
-    const extraData = req.body.extraData
-    const errorCode = req.body.errorCode
-    const localMessage = req.body.localMessage
-    const message = req.body.message
-    const orderId = req.body.orderId
-    const orderInfo = req.body.orderInfo
-    const orderType = req.body.orderType
-    const partnerCode = req.body.partnerCode
-    const payType = req.body.payType
-    const requestId = req.body.requestId
-    const responseTime = req.body.responseTime
-    const transId = req.body.transId
+    const rawSignature = "accessKey=" + accessKey + "&amount=" + amount + "&extraData=" + extraData + "&ipnUrl=" + ipnUrl + "&orderId=" + orderId + "&orderInfo=" + orderInfo + "&partnerCode=" + partnerCode + "&redirectUrl=" + redirectUrl + "&requestId=" + requestId + "&requestType=" + requestType;
 
-    let param = `partnerCode=${partnerCode}&accessKey=${accessKey}&requestId=${requestId}&amount=${amount}&orderId=${orderId}&orderInfo=${orderInfo}&orderType=${orderType}&transId=${transId}&message=${message}&localMessage=${localMessage}&responseTime=${responseTime}&errorCode=${errorCode}&payType=${payType}&extraData=${extraData}`
 
-    var signature = crypto.createHmac('sha256', serectkey)
-        .update(param)
-        .digest('hex');
+    const signature = sha256.hmac(secretKey, rawSignature);
+    const requestBody = JSON.stringify({
+        partnerCode: partnerCode,
+        partnerName: "Test",
+        storeId: "MomoTestStore",
+        requestId: requestId,
+        amount: amount,
+        orderId: orderId,
+        orderInfo: orderInfo,
+        redirectUrl: redirectUrl,
+        ipnUrl: ipnUrl,
+        lang: lang,
+        requestType: requestType,
+        autoCapture: autoCapture,
+        extraData: extraData,
+        orderGroupId: orderGroupId,
+        signature: signature
+    });
 
-    if (req.body.signature !== signature) {
-        res.send("Thông tin request không hợp lệ")
-        return;
-    }
-    if (errorCode == 0) {
-        res.send("Thanh Cong")
-    } else {
-        res.send("Thanh toán thất bại")
-    }
+    const response = await axios.post('https://test-payment.momo.vn/v2/gateway/api/create', requestBody, {
+        headers: {
+            'Content-Type': 'application/json',
+            'Content-Length': Buffer.byteLength(requestBody)
+        }
+    });
 
+    res.json(response.data)
 }
 
 
+module.exports.post_zalopay = async (req, res) => {
+    const config = {
+        app_id: '2553',
+        key1: 'PcY4iZIKFCIdgZvA6ueMcMHHUbRLYjPL',
+        key2: 'kLtgPl8HHhfvMuDHPwKfgfsY4Ydm9eIz',
+        endpoint: 'https://sb-openapi.zalopay.vn/v2/create',
+    };
+    const embed_data = {
+        //sau khi hoàn tất thanh toán sẽ đi vào link này (thường là link web thanh toán thành công của mình)
+        redirecturl: 'https://phongthuytaman.com',
+    };
 
+    const items = [];
+    const transID = Math.floor(Math.random() * 1000000);
 
+    const order = {
+        app_id: config.app_id,
+        app_trans_id: `${moment().format('YYMMDD')}_${transID}`, // translation missing: vi.docs.shared.sample_code.comments.app_trans_id
+        app_user: 'user123',
+        app_time: Date.now(), // miliseconds
+        item: JSON.stringify(items),
+        embed_data: JSON.stringify(embed_data),
+        amount: 50000,
+        //khi thanh toán xong, zalopay server sẽ POST đến url này để thông báo cho server của mình
+        //Chú ý: cần dùng ngrok để public url thì Zalopay Server mới call đến được
+        callback_url: 'https://b074-1-53-37-194.ngrok-free.app/callback',
+        description: `Lazada - Payment for the order #${transID}`,
+        bank_code: '',
+    };
 
+    // appid|app_trans_id|appuser|amount|apptime|embeddata|item
+    const data =
+        config.app_id +
+        '|' +
+        order.app_trans_id +
+        '|' +
+        order.app_user +
+        '|' +
+        order.amount +
+        '|' +
+        order.app_time +
+        '|' +
+        order.embed_data +
+        '|' +
+        order.item;
+    order.mac = sha256.hmac(config.key1, data);
 
+    try {
+        const result = await axios.post(config.endpoint, null, { params: order });
+        return res.status(200).json(result.data);
+    } catch (error) {
+        console.log(error);
+    }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// module.exports.post_paypal = async (req, res) => {
-
-//     var create_payment_json = {
-//         "intent": "authorize",
-//         "payer": {
-//             "payment_method": "paypal"
-//         },
-//         "redirect_urls": {
-//             "return_url": "http://localhost:3000/success",
-//             "cancel_url": "http://localhost:3000/fail"
-//         },
-//         "transactions": [{
-//             "item_list": {
-//                 "items": [{
-//                     "name": "item", // Tên sản phẩm
-//                     "sku": "item", // mã sản phẩm
-//                     "price": "1.00", // giá tiền
-//                     "currency": "USD",
-//                     "quantity": 1 // số lượng
-//                 }]
-//             },
-//             "amount": {
-//                 "currency": "USD",
-//                 "total": "1.00" // tổng số tiền phụ thuộc vào mình code
-//             },
-//             "description": "This is the payment description."
-//         }]
-//     };
-
-//     paypal.payment.create(create_payment_json, function (error, payment) {
-//         if (error) {
-//             console.log(error.response);
-//             throw error;
-//         } else {
-//             for (var index = 0; index < payment.links.length; index++) {
-//             //Redirect user to this endpoint for redirect url
-//                 if (payment.links[index].rel === 'approval_url') {
-//                     console.log(payment.links[index].href);
-//                 }
-//             }
-//             console.log(payment);
-//         }
-//     });
-
-//     res.send("Thanh Cong")
-
-// }
+}
